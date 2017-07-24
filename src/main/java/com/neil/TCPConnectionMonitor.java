@@ -65,7 +65,7 @@ class TCPConnectionMonitor implements Runnable
         }
     }
 
-    private void notifyListeners(ServiceStatus status, boolean inScheduledOutage)
+    private void notifyListeners(TCPConnectionStatus status, boolean inScheduledOutage)
     {
         Set<TCPConnectionStatusListener> drainedListeners = new HashSet<>();
         listeners.drainTo(drainedListeners);

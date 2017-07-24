@@ -5,8 +5,8 @@ import org.junit.Test;
 import java.io.IOException;
 import java.net.Socket;
 
-import static com.neil.ServiceStatus.TCPConnection_Refused;
-import static com.neil.ServiceStatus.TCPConnection_Success;
+import static com.neil.TCPConnectionStatus.TCPConnection_Refused;
+import static com.neil.TCPConnectionStatus.TCPConnection_Success;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 

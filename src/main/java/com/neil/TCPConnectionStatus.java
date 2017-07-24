@@ -1,6 +1,6 @@
 package com.neil;
 
-enum ServiceStatus
+enum TCPConnectionStatus
 {
     TCPConnection_Success,
     TCPConnection_Refused

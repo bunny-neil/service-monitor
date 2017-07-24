@@ -14,13 +14,13 @@ class TCPConnectionTask
         this.port = port;
     }
 
-    public ServiceStatus run()
+    public TCPConnectionStatus run()
     {
         try(Socket unused = createSocket()) {
-            return ServiceStatus.TCPConnection_Success;
+            return TCPConnectionStatus.TCPConnection_Success;
         }
         catch (IOException ex) {
-            return ServiceStatus.TCPConnection_Refused;
+            return TCPConnectionStatus.TCPConnection_Refused;
         }
     }
 
