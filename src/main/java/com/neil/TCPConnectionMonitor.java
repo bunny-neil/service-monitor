@@ -44,6 +44,12 @@ class TCPConnectionMonitor implements Runnable
         listenerQueue.add(listener);
     }
 
+    public TCPConnectionStatus checkConnectionImmediately()
+    {
+        TCPConnectionTask task = new TCPConnectionTask(address, port);
+        return task.run();
+    }
+
     public void scheduleOutage(LocalDateTime startDate, LocalDateTime endDate)
     {
         LocalDateTime now = LocalDateTime.now();
@@ -51,8 +57,8 @@ class TCPConnectionMonitor implements Runnable
                 - now.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
         long endDelay = endDate.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
                 - now.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-        outagePlanExecutor.schedule(() -> {inScheduledOutage = true; System.out.println("start outage for service" + address + "/" + port);}, startDelay, TimeUnit.MILLISECONDS);
-        outagePlanExecutor.schedule(() -> {inScheduledOutage = false; System.out.println("end outage for service" + address + "/" + port);}, endDelay, TimeUnit.MILLISECONDS);
+        outagePlanExecutor.schedule(() -> inScheduledOutage = true, startDelay, TimeUnit.MILLISECONDS);
+        outagePlanExecutor.schedule(() -> inScheduledOutage = false, endDelay, TimeUnit.MILLISECONDS);
     }
 
     @Override

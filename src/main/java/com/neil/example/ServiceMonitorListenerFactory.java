@@ -5,13 +5,26 @@ import com.neil.TCPConnectionStatusListener;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-public class ServiceMonitorListener implements TCPConnectionStatusListener
+public class ServiceMonitorListenerFactory implements TCPConnectionStatusListener
 {
+    public static final String GOOGLE_SERVICE = "www.google.com/80";
+    public static final String GLOBAL_RELAY = "www.globalrelay.com/80";
+
     private String service;
     private long frequency;
     private TimeUnit unit;
 
-    public ServiceMonitorListener(String service, long frequency, TimeUnit unit)
+    public static ServiceMonitorListenerFactory createGlobalRelayListener(long frequency)
+    {
+        return new ServiceMonitorListenerFactory(GLOBAL_RELAY, frequency, TimeUnit.SECONDS);
+    }
+
+    public static ServiceMonitorListenerFactory createGoogleListener(long frequency)
+    {
+        return new ServiceMonitorListenerFactory(GOOGLE_SERVICE, frequency, TimeUnit.SECONDS);
+    }
+
+    public ServiceMonitorListenerFactory(String service, long frequency, TimeUnit unit)
     {
         this.service = service;
         this.frequency = frequency;

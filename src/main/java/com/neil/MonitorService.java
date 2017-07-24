@@ -19,8 +19,8 @@ public class MonitorService
         TCPConnectionMonitor monitor = getOrCreateMonitor(service);
         monitor.start();
 
-        TCPConnectionTaskStatusListenerScheduler scheduler = getOrCreateScheduler(service);
-        scheduler.scheduleListener(monitor, listener, frequency, unit);
+        TCPConnectionTaskStatusListenerScheduler scheduler = getOrCreateScheduler(service, monitor);
+        scheduler.scheduleListener(listener, frequency, unit);
     }
 
     public void scheduleOutage(String service, LocalDateTime startDate, LocalDateTime endDate)
@@ -32,6 +32,7 @@ public class MonitorService
     public void setGraceTime(LocalDateTime startDate, LocalDateTime endDate)
     {
         servicesAndMonitors.keySet().forEach(service -> scheduleOutage(service, startDate, endDate));
+        servicesAndSchedulers.values().forEach(scheduler -> scheduler.scheduleListenersOnGraceExpires(startDate, endDate));
     }
 
     public void shutdown()
@@ -45,9 +46,9 @@ public class MonitorService
         return servicesAndMonitors.computeIfAbsent(service, s -> new TCPConnectionMonitor(parseAddress(s), parsePort(s)));
     }
 
-    private TCPConnectionTaskStatusListenerScheduler getOrCreateScheduler(String service)
+    private TCPConnectionTaskStatusListenerScheduler getOrCreateScheduler(String service, TCPConnectionMonitor monitor)
     {
-        return servicesAndSchedulers.computeIfAbsent(service, k -> new TCPConnectionTaskStatusListenerScheduler());
+        return servicesAndSchedulers.computeIfAbsent(service, k -> new TCPConnectionTaskStatusListenerScheduler(monitor));
     }
 
     private String parseAddress(String service)
