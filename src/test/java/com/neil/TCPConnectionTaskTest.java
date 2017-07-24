@@ -13,7 +13,7 @@ import static org.mockito.Mockito.mock;
 public class TCPConnectionTaskTest
 {
     @Test
-    public void testRun_WhenSocketIOException_ShouldReturn_TCPConnection_Refused()
+    public void testRun_GivenSocketIOException_ShouldReturn_TCPConnection_Refused()
     {
         final TCPConnectionTask underTest = new TCPConnectionTask("doesn't matter", 0)
         {
@@ -27,7 +27,7 @@ public class TCPConnectionTaskTest
     }
 
     @Test
-    public void testRun_WhenSocketSuccess_ShouldReturn_TCPConnection_Success()
+    public void testRun_GivenSocketSuccess_ShouldReturn_TCPConnection_Success()
     {
         final TCPConnectionTask underTest = new TCPConnectionTask("doesn't matter", 3306)
         {
