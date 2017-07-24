@@ -16,7 +16,7 @@ class TCPConnectionTaskStatusListenerScheduler implements Runnable
     private ScheduledExecutorService listenerScheduler;
     private ScheduledExecutorService graceExpiresListenerScheduler;
     private List<TCPConnectionStatusListenerWrapper> listenerList;
-    private long graceDurationInMillis = -1L;
+    private long graceDurationInMillis = 0L;
 
     public TCPConnectionTaskStatusListenerScheduler(TCPConnectionMonitor monitor)
     {
@@ -50,14 +50,10 @@ class TCPConnectionTaskStatusListenerScheduler implements Runnable
     @Override
     public void run()
     {
-        if (graceDurationInMillis > 0) {
-            Set<TCPConnectionStatusListener> matchedWrappers = listenerList.stream()
-                    .filter(wrapper -> wrapper.getFrequencyInMillis() > graceDurationInMillis)
-                    .collect(Collectors.toSet());
-            if (matchedWrappers.size() > 0)
-            {
-                monitor.notifyListeners(monitor.checkConnectionImmediately(), matchedWrappers);
-            }
+        Set<TCPConnectionStatusListener> matchedListeners = findListenersWithFrequencyGreaterThanGraceDuration();
+        if (matchedListeners.size() > 0)
+        {
+            monitor.notifyListeners(monitor.checkConnectionImmediately(), matchedListeners);
         }
     }
 
@@ -69,6 +65,13 @@ class TCPConnectionTaskStatusListenerScheduler implements Runnable
     protected List<TCPConnectionStatusListenerWrapper> createListenerList()
     {
         return new CopyOnWriteArrayList<>();
+    }
+
+    private Set<TCPConnectionStatusListener> findListenersWithFrequencyGreaterThanGraceDuration()
+    {
+        return listenerList.stream()
+                .filter(wrapper -> wrapper.getFrequencyInMillis() > graceDurationInMillis)
+                .collect(Collectors.toSet());
     }
 
     private long toMilliseconds(LocalDateTime dateTime)
