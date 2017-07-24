@@ -16,11 +16,16 @@ class TCPConnectionTask
 
     public ServiceStatus run()
     {
-        try(Socket unused = new Socket(address, port)) {
+        try(Socket unused = createSocket()) {
             return ServiceStatus.TCPConnection_Success;
         }
         catch (IOException ex) {
             return ServiceStatus.TCPConnection_Refused;
         }
+    }
+
+    protected Socket createSocket() throws IOException
+    {
+        return new Socket(address, port);
     }
 }
