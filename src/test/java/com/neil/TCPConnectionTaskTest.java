@@ -1,12 +1,12 @@
 package com.neil;
 
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.net.Socket;
 
-import static com.neil.ServiceStatus.*;
+import static com.neil.ServiceStatus.TCPConnection_Refused;
+import static com.neil.ServiceStatus.TCPConnection_Success;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
