@@ -14,7 +14,7 @@ class TCPConnectionMonitor implements Runnable
 {
     private String address;
     private int port;
-    private BlockingQueue<TCPConnectionStatusListener> listeners;
+    private BlockingQueue<TCPConnectionStatusListener> listenerQueue;
     private ScheduledExecutorService connectionAttemptExecutor;
     private ScheduledExecutorService outagePlanExecutor;
     private boolean inScheduledOutage = false;
@@ -23,7 +23,7 @@ class TCPConnectionMonitor implements Runnable
     {
         this.address = address;
         this.port = port;
-        this.listeners = createListenerQueue();
+        this.listenerQueue = createListenerQueue();
         this.connectionAttemptExecutor = createSingleThreadScheduleExecutor();
         this.outagePlanExecutor = createSingleThreadScheduleExecutor();
     }
@@ -41,7 +41,7 @@ class TCPConnectionMonitor implements Runnable
 
     public void registerListener(TCPConnectionStatusListener listener)
     {
-        listeners.add(listener);
+        listenerQueue.add(listener);
     }
 
     public void scheduleOutage(LocalDateTime startDate, LocalDateTime endDate)
@@ -59,17 +59,26 @@ class TCPConnectionMonitor implements Runnable
     public void run()
     {
         final boolean inScheduledOutageCopy = inScheduledOutage;
-        if (listeners.size() > 0) {
+        if (listenerQueue.size() > 0) {
             TCPConnectionTask task = new TCPConnectionTask(address, port);
-            notifyListeners(task.run(), inScheduledOutageCopy);
+            TCPConnectionStatus newStatus = task.run();
+            Set<TCPConnectionStatusListener> listenerSet = drainListeners();
+            if ( ! inScheduledOutageCopy) {
+                notifyListeners(newStatus, listenerSet);
+            }
         }
     }
 
-    private void notifyListeners(TCPConnectionStatus status, boolean inScheduledOutage)
+    protected Set<TCPConnectionStatusListener> drainListeners()
     {
         Set<TCPConnectionStatusListener> drainedListeners = new HashSet<>();
-        listeners.drainTo(drainedListeners);
-        drainedListeners.forEach(listener -> {
+        listenerQueue.drainTo(drainedListeners);
+        return drainedListeners;
+    }
+
+    protected void notifyListeners(TCPConnectionStatus status, Set<TCPConnectionStatusListener> listenerSet)
+    {
+        listenerSet.forEach(listener -> {
             if (!inScheduledOutage) {
                 switch (status) {
                     case TCPConnection_Success:

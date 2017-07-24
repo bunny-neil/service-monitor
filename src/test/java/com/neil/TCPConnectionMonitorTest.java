@@ -39,7 +39,13 @@ public class TCPConnectionMonitorTest
     }
 
     @Test
-    public void testStart_GivenNothing_Should_ScheduleWithFixedDelay_GetCalledOnce()
+    public void testRun_GivenEmptyQueue_ShouldNotRunTask()
+    {
+
+    }
+
+    @Test
+    public void testStart_GivenNothing_ShouldScheduleWithFixedDelayGetCalledOnce()
     {
         underTest.start();
         verify(mockExecutor, times(1)).scheduleWithFixedDelay(
@@ -47,14 +53,14 @@ public class TCPConnectionMonitorTest
     }
 
     @Test
-    public void testShutdown_GivenNothing_Should_Shutdown_GetCalledTwice()
+    public void testShutdown_GivenNothing_ShouldShutdownGetCalledTwice()
     {
         underTest.shutdown();
         verify(mockExecutor, times(2)).shutdown();
     }
 
     @Test
-    public void testRegisterListener_GivenEmptyQueue_AddNewListener_ShouldHaveOneistener()
+    public void testRegisterListener_GivenEmptyQueueAddNewListenerShouldHaveOneistener()
     {
         TCPConnectionStatusListener mockListener = mock(TCPConnectionStatusListener.class);
         underTest.registerListener(mockListener);
