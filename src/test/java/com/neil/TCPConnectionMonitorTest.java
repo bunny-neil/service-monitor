@@ -39,12 +39,6 @@ public class TCPConnectionMonitorTest
     }
 
     @Test
-    public void testRun_GivenEmptyQueue_ShouldNotRunTask()
-    {
-
-    }
-
-    @Test
     public void testStart_GivenNothing_ShouldScheduleWithFixedDelayGetCalledOnce()
     {
         underTest.start();
