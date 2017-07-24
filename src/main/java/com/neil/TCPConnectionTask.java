@@ -7,7 +7,6 @@ class TCPConnectionTask
 {
     private String address;
     private int port;
-    private long delay;
 
     public TCPConnectionTask(String address, int port)
     {
