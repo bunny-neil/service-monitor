@@ -15,7 +15,7 @@ public class TCPConnectionTaskTest
     @Test
     public void testRun_WhenSocketIOException_ShouldReturn_TCPConnection_Refused()
     {
-        final TCPConnectionTask underTest = new TCPConnectionTask("invalid_address", 0)
+        final TCPConnectionTask underTest = new TCPConnectionTask("doesn't matter", 0)
         {
             @Override
             protected Socket createSocket() throws IOException
@@ -29,7 +29,7 @@ public class TCPConnectionTaskTest
     @Test
     public void testRun_WhenSocketSuccess_ShouldReturn_TCPConnection_Success()
     {
-        final TCPConnectionTask underTest = new TCPConnectionTask("localhost", 3306)
+        final TCPConnectionTask underTest = new TCPConnectionTask("doesn't matter", 3306)
         {
             @Override
             protected Socket createSocket() throws IOException
