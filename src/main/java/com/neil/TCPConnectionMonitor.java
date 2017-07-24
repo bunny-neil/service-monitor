@@ -23,14 +23,14 @@ class TCPConnectionMonitor implements Runnable
     {
         this.address = address;
         this.port = port;
-        this.listeners = new LinkedBlockingQueue<>();
-        this.connectionAttemptExecutor = Executors.newSingleThreadScheduledExecutor();
-        this.outagePlanExecutor = Executors.newSingleThreadScheduledExecutor();
+        this.listeners = createListenerQueue();
+        this.connectionAttemptExecutor = createSingleThreadScheduleExecutor();
+        this.outagePlanExecutor = createSingleThreadScheduleExecutor();
     }
 
     public void start()
     {
-        connectionAttemptExecutor.scheduleWithFixedDelay(this, 0, 1, TimeUnit.SECONDS);
+        connectionAttemptExecutor.scheduleWithFixedDelay(this, 0L, 1L, TimeUnit.SECONDS);
     }
 
     public void shutdown()
@@ -82,13 +82,13 @@ class TCPConnectionMonitor implements Runnable
         });
     }
 
-    public String getAddress()
+    protected BlockingQueue<TCPConnectionStatusListener> createListenerQueue()
     {
-        return address;
+        return new LinkedBlockingQueue<>();
     }
 
-    public int getPort()
+    protected ScheduledExecutorService createSingleThreadScheduleExecutor()
     {
-        return port;
+        return Executors.newSingleThreadScheduledExecutor();
     }
 }
