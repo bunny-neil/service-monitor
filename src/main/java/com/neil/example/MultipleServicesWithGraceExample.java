@@ -10,7 +10,7 @@ public class MultipleServicesWithGraceExample
     {
         MonitorService monitorService = new MonitorService();
 
-        ServiceMonitorListenerFactory google20 = ServiceMonitorListenerFactory.createGoogleListener(20);
+        ListenersHelper google20 = ListenersHelper.createGoogleListener(20);
         monitorService.register(
                 google20.getService(),
                 google20.getFrequency(),
