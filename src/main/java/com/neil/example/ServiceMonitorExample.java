@@ -20,10 +20,16 @@ public class ServiceMonitorExample
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime start = now.plusSeconds(1L);
-        LocalDateTime end = start.plusSeconds(20L);
-        monitorService.scheduleOutage(GOOGLE_SERVICE, start, end);
-
+        LocalDateTime end = start.plusSeconds(10L);
+        monitorService.scheduleOutage(GLOBAL_RELAY, start, end);
         Thread.sleep(15000); // run another 15 seconds
+
+        now = LocalDateTime.now();
+        start = now.plusSeconds(1L);
+        end = start.plusSeconds(10L);
+        monitorService.setGraceTime(start, end);
+        Thread.sleep(20000); // run another 20 seconds
+
         monitorService.shutdown();
     }
 

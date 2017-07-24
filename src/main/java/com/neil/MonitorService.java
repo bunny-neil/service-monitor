@@ -11,7 +11,7 @@ public class MonitorService
 {
     public static final String ADDRESS_PORT_SEPARATOR = "/";
 
-    private Map<String, ScheduledExecutorService> servicesAndSchedulers = new HashMap<>();
+    private Map<String, TCPConnectionTaskStatusListenerScheduler> servicesAndSchedulers = new HashMap<>();
     private Map<String, TCPConnectionMonitor> servicesAndMonitors = new HashMap<>();
 
     public void register(String service, long frequency, TimeUnit unit, TCPConnectionStatusListener listener)
@@ -19,8 +19,8 @@ public class MonitorService
         TCPConnectionMonitor monitor = getOrCreateMonitor(service);
         monitor.start();
 
-        ScheduledExecutorService scheduler = getOrCreateScheduler(service);
-        scheduler.scheduleAtFixedRate(() -> monitor.registerListener(listener), frequency, frequency, unit);
+        TCPConnectionTaskStatusListenerScheduler scheduler = getOrCreateScheduler(service);
+        scheduler.scheduleListener(monitor, listener, frequency, unit);
     }
 
     public void scheduleOutage(String service, LocalDateTime startDate, LocalDateTime endDate)
@@ -29,9 +29,14 @@ public class MonitorService
         monitor.scheduleOutage(startDate, endDate);
     }
 
+    public void setGraceTime(LocalDateTime startDate, LocalDateTime endDate)
+    {
+        servicesAndMonitors.keySet().forEach(service -> scheduleOutage(service, startDate, endDate));
+    }
+
     public void shutdown()
     {
-        servicesAndSchedulers.values().forEach(ScheduledExecutorService::shutdown);
+        servicesAndSchedulers.values().forEach(TCPConnectionTaskStatusListenerScheduler::shutdown);
         servicesAndMonitors.values().forEach(TCPConnectionMonitor::shutdown);
     }
 
@@ -40,9 +45,9 @@ public class MonitorService
         return servicesAndMonitors.computeIfAbsent(service, s -> new TCPConnectionMonitor(parseAddress(s), parsePort(s)));
     }
 
-    private ScheduledExecutorService getOrCreateScheduler(String service)
+    private TCPConnectionTaskStatusListenerScheduler getOrCreateScheduler(String service)
     {
-        return servicesAndSchedulers.computeIfAbsent(service, k -> Executors.newSingleThreadScheduledExecutor());
+        return servicesAndSchedulers.computeIfAbsent(service, k -> new TCPConnectionTaskStatusListenerScheduler());
     }
 
     private String parseAddress(String service)
