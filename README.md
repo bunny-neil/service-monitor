@@ -50,5 +50,5 @@ polling frequency, the monitor should schedule extra checks of the service.
   <p>One instance per service. It takes interests(TCPConnectionStatusListener) from client, schedules them for future execution based on frequency. When a scheduled interest fires, it send interest to TCPConnectionMonitor. Also when a grace time expires, it checks if there is any interests whose frequency are great than grace time on a separate thread, if yes, asks TCPConnectionMonitor to do a immediate check.</p>
 
 # Status
-* Features as specified in the assignment are all completed
+* Features completed
 * Unit tests still needs improvements
